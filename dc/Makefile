@@ -148,31 +148,7 @@ IP.BIN: ip.txt
 	makeip ip.txt IP.BIN
 
 dist: 1TURBOZ.BIN IP.BIN
-	plain=xmil-$(shell date '+%Y%m%d')-dreamcast-plainfiles \
-	source=xmil-$(shell date '+%Y%m%d')-dreamcast-source \
-	$(MKDIR) disttmp/$(plain) && \
-	cp README.TXT disttmp/$(plain) && \
-	cp LICENCE.TXT disttmp/$(plain) && \
-	cp IP.BIN disttmp/$(plain) && \
-	cp 1TURBOZ.BIN disttmp/$(plain) && \
-	(cd disttmp && tar cvf - $(plain)) | bzip2 -c > $(plain).tar.bz2
-	rm -rf disttmp/$(plain)
-	$(MKDIR) disttmp/$(source) && \
-	cp *.cpp *.h *.res *.str Makefile disttmp/$(source)/dc && \
-	cp -r common disttmp/$(source)/dc && \
-	cp -r fdd disttmp/$(source)/dc && \
-	cp -r menu disttmp/$(source)/dc && \
-	cp -r sh disttmp/$(source)/dc && \
-	cp ../*.c ../*.h ../*.tbl disttmp/$(source) && \
-	cp -r ../common disttmp/$(source) && \
-	cp -r ../fdd disttmp/$(source) && \
-	cp -r ../font disttmp/$(source) && \
-	cp -r ../io disttmp/$(source) && \
-	cp -r ../sound disttmp/$(source) && \
-	cp -r ../vram disttmp/$(source) && \
-	cp -r ../z80hdc disttmp/$(source) && \
-	(cd disttmp && tar cvf - $(source) | bzip2 -c > $(source).tar.bz2
-	rm -rf disttmp
+	sh release.sh all
 
 distclean:
 	$(RM) $(OBJBASE) $(BINBASE)
