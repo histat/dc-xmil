@@ -147,7 +147,7 @@ ip.txt: ip.txt.in
 IP.BIN: ip.txt
 	makeip ip.txt IP.BIN
 
-dist: 1TURBOZ.BIN IP.BIN
+dist: all 1TURBOZ.BIN IP.BIN
 	sh release.sh all
 
 distclean:
