@@ -138,11 +138,15 @@ xmil.bin: $(DCELF)
 1TURBOZ.BIN: xmil.bin
 	scramble $< $@
 
+#XMILVER=$(shell grep 'XMILVER_CORE' ../xmilver.h | sed -e 's/[^"]*"\([^"]*\)".*/\1/' | sed -e 's/ver\.//' | sed -e 's/[^0-9]//')
+
+XMILVER=026
+
 ip.txt: ip.txt.in
-	if [ $(shell echo $(XMILVER) | sed -e 's/[^0-9]//')  -ge 026 ]; then \
+	if [ $(shell echo $(XMILVER)) -ge 050 ]; then \
 	 ver=V$(XMILVER); \
-	else ver=git; fi; \
-	sed -e 's/[@]VERSION[@]/'"$$ver"/ -e 's/[@]DATE[@]/$(shell date '+%Y%m%d')/' < $< 
+	else ver=alpha; fi; \
+	sed -e 's/[@]VERSION[@]/'"$$ver"/ -e 's/[@]DATE[@]/$(shell date '+%Y%m%d')/' < $< > $@ 
 
 IP.BIN: ip.txt
 	makeip ip.txt IP.BIN
@@ -154,7 +158,7 @@ distclean:
 	$(RM) $(OBJBASE) $(BINBASE)
 
 clean:
-	$(RM) $(DCOBJ) $(DCELF) xmil.strip.elf 1TURBOZ.BIN IP.BIN ip.txt
+	$(RM) $(DCOBJ) $(DCELF) xmil.strip.elf xmil.bin 1TURBOZ.BIN IP.BIN ip.txt
 
 
 $(OBJ)/strres.o		:	$(COMMON)/strres.c $(HEADERS) $(COMMON)/strres.h
