@@ -48,10 +48,19 @@ void scrnmng_update();
 
 #define	scrnmng_setcolormode(f)	(SUCCESS)
 #define	scrnmng_isfullscreen()
-#define	scrnmng_getbpp()		(scrnmng.bpp)
-#define	scrnmng_allflash()		scrnmng.allflash = TRUE
+#if defined(SUPPORT_8BPP)
+#define	scrnmng_getbpp()		(8)
+#elif defined(SUPPORT_16BPP)
+#define	scrnmng_getbpp()		(16)
+#else
+#error Not supportetd
+#endif
+#define	scrnmng_allflash()
+#if defined(SUPPORT_8BPP)
 #define	scrnmng_palchanged()	scrnmng.palchanged = TRUE
-
+#else
+#define	scrnmng_palchanged()
+#endif
 RGB16 scrnmng_makepal16(RGB32 pal32);			// pal_get16pal	
 
 // ---

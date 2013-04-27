@@ -20,7 +20,7 @@ typedef struct {
 } SCRNSTAT;
 
 
-		REG8		scrnmode;
+REG8		scrnmode;
 //static	DDRAW		ddraw;
 		SCRNMNG		scrnmng;
 static	SCRNSTAT	scrnstat;
@@ -42,12 +42,16 @@ void* texs[2][3];
 #define TEXSIZE (256*480+2048)
 #define SMALLTEXSIZE (128*480+2048)
 static unsigned char tscrn[TEXSIZE] __attribute__((aligned(32)));
+#define SCREEN_SIZE SCREEN_WIDTH*SCREEN_HEIGHT
+#elif defined(SUPPORT_16BPP)
+static void *screen_tx[2];
+#define SCREEN_SIZE SCREEN_WIDTH*SCREEN_HEIGHT*2
+#else
+#error Not supportetd
 #endif
 
-static unsigned char screen[SCREEN_WIDTH*SCREEN_HEIGHT*2] __attribute__((aligned (32)));
-#if defined(SUPPORT_16BPP)
-static void *screen_tx[2];
-#endif
+
+static unsigned char screen[SCREEN_SIZE] __attribute__((aligned (32)));
 static int buffer = 0;
 
 
@@ -59,7 +63,7 @@ static int buffer = 0;
 
 //#define USE_DMA
 
-void txr_load_dma(void *src, void *dst, unsigned int count)
+static void txr_load_dma(void *src, void *dst, unsigned int count)
 {
 #ifdef USE_DMA
 
@@ -82,9 +86,10 @@ void txr_load_dma(void *src, void *dst, unsigned int count)
 	
 	unsigned int *s = (unsigned int *)src;
 	unsigned int *d = (unsigned int *)(void *)
-		(0xe0000000 | (((unsigned long)dst) & 0x03ffffe0));
-	QACR0 = ((((unsigned int)dst)>>26)<<2)&0x1c;
-	QACR1 = ((((unsigned int)dst)>>26)<<2)&0x1c;
+		(0xe0000000 | (((unsigned long)dst) & 0x03ffffc0));
+
+	QACR0 = ((((unsigned int)0xa4000000)>>26)<<2)&0x1c;
+	QACR1 = ((((unsigned int)0xa4000000)>>26)<<2)&0x1c;
 
 	count >>= 6;
 	
@@ -122,6 +127,7 @@ void memcpy64(void *src, void *dst, int cnt)
 	unsigned int *s = (unsigned int *)src;
 	unsigned int *d = (unsigned int *)(void *)
 		(0xe0000000 | (((unsigned long)dst) & 0x03ffffe0));
+	
 	QACR0 = ((((unsigned int)dst)>>26)<<2)&0x1c;
 	QACR1 = ((((unsigned int)dst)>>26)<<2)&0x1c;
 
@@ -357,6 +363,7 @@ static void bmp16draw(void *bmp, UINT8 *dst, int width, int height,int xalign, i
 }
 #endif
 
+#if defined(SUPPORT_8BPP)
 static void paletteinit(void) {
 
 	scrnmng.palchanged = 0;
@@ -368,7 +375,8 @@ static void paletteset(void) {
 
 	unsigned short pal;
 	Codebook_t *p = &cb;
-	
+
+// START_PAL is 0
 	if (xmil_palettes) {
 		for (i=0; i<xmil_palettes; i++) {
 			pal = (xmil_pal32[i].p.r & 0xf8) << 8
@@ -383,7 +391,7 @@ static void paletteset(void) {
 		}
 	}
 }
-
+#endif
 
 // ----
 
@@ -400,6 +408,8 @@ BRESULT scrnmng_create(UINT8 mode) {
 
 	
 	ZeroMemory(&scrnmng, sizeof(scrnmng));
+
+	ZeroMemory(screen, sizeof(screen));
 	
 	
 #ifdef USE_DMA
@@ -431,21 +441,18 @@ BRESULT scrnmng_create(UINT8 mode) {
 
 		int i;
 		for (i=0; i<2; ++i) {
-			screen_tx[i] = tx_getscreen(SCREEN_WIDTH*SCREEN_HEIGHT*2);
+			screen_tx[i] = tx_getscreen(SCREEN_SIZE);
 		}
 #else
 		goto scre_err;
 #endif
 	}
 
-	scrnmng.bpp = (UINT8)bitcolor;
 	scrnsurf.bpp = bitcolor;
 
 	buffer = 0;
 
 #if defined(SUPPORT_8BPP)
-	ZeroMemory(screen, SCREEN_WIDTH*SCREEN_HEIGHT*2);
-
 	scrnmng_update();
 	commit_dummy_transpoly();
 	ta_commit_frame();
@@ -486,9 +493,15 @@ const SCRNSURF *scrnmng_surflock(void)
 	scrnsurf.ptr = (UINT8 *)screen;  
 	scrnsurf.width = scrnstat.width;
 	scrnsurf.height = scrnstat.height;
-	scrnsurf.xalign = scrnmng.bpp >> 3;
-	scrnsurf.yalign = SCREEN_WIDTH*scrnsurf.xalign;
-//	scrnsurf.bpp = scrnmng.bpp;
+#if defined(SUPPORT_8BPP)
+	scrnsurf.xalign = 1;
+	scrnsurf.yalign = SCREEN_WIDTH;
+#elif defined(SUPPORT_16BPP)
+	scrnsurf.xalign = 2;
+	scrnsurf.yalign = SCREEN_WIDTH*2;
+#else
+#error Not supportetd
+#endif
 
 	return(&scrnsurf);
 }
@@ -507,7 +520,10 @@ void scrnmng_surfunlock(const SCRNSURF *surf)
 	copy_640_8(screen, texs[buffer], &cb, surf->height);
 #elif defined(SUPPORT_16BPP)
 	
-	memcpy64(screen, screen_tx[buffer], surf->width*surf->height*2);
+	txr_load_dma(screen, screen_tx[buffer], surf->width*surf->height*2);
+#else
+#error Not supportetd
+
 #endif
 }
 
@@ -579,8 +595,7 @@ void scrnmng_update(void)
 	
 	ta_commit_end();
 #else
-	ta_begin_frame();
-	ta_commit_end();
+#error Not supportetd
 #endif
 }
 
