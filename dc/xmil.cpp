@@ -343,7 +343,7 @@ int main(void)
 #ifndef NOSERIAL
 	serial_init(57600);
 	usleep(20000);
-	reportf("Serial OK\n");
+	printf("Serial OK\n");
 #endif
 
 	cdfs_init();
