@@ -22,7 +22,7 @@ bool Icon::loadIcon(const unsigned char *buf)
 	offset = get_long(buf+18);
 	BitCount = get_short(buf+offset+14);
   
-	if (ColorCount != 16 || BitCount != 4 || ColorCount != 16 || BitCount != 4)
+	if (ColorCount != 16 || BitCount != 4)
 		return false;
     
 	memset(palette, 0, sizeof(palette));

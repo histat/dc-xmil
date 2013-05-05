@@ -77,7 +77,7 @@ typedef unsigned long DWORD;
 #define	SUPPORT_ANK
 #endif
 
-// FIXME: this allows assembler sound even on sh4 assembler even on Dreammcast
+// FIXME: this allows assembler sound even on Dreammcast
 #define _WIN32_WCE
 
 #define	SUPPORT_8BPP
