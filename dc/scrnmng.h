@@ -65,20 +65,11 @@ RGB16 scrnmng_makepal16(RGB32 pal32);			// pal_get16pal
 
 // ---
 
-void scrnmng_initialize(void);						// ddraws_initwindowsize
-BRESULT scrnmng_create(UINT8 scrnmode);				// ddraws_InitDirectDraw
-void scrnmng_destroy(void);							// ddraws_TermDirectDraw
-BRESULT scrnmng_changescreen(REG8 newmode);
+void scrnmng_initialize(void);
+BRESULT scrnmng_create(UINT8 scrnmode);
+void scrnmng_destroy(void);
 
-void scrnmng_querypalette(void);					// ddraws_palette
-void scrnmng_fullscrnmenu(int y);
-//void scrnmng_topwinui(void);						// ddraws_topwinui
-//void scrnmng_clearwinui(void);						// ddraws_clearwinui
-	
-#define	USE_PALS		0xc0
-#define	START_EXT		(START_PAL + USE_PALS)
-#define	EXT_PALS		0x28
-#define	TOTAL_PALS		(USE_PALS + EXT_PALS)
+void scrnmng_clear(BRESULT logo);
 
 #ifdef __cplusplus
 }

@@ -282,24 +282,6 @@ static void draw_640_8(pvr_context * context, float x, float y, float z)
 #endif
 }
 
-
-/*
-	converts a 256 color palette to a pvr2 codebook designed to allow use of 8 bit texel data
-	*pal should point to a 256 entry palette of 2 byte texels
-*/
-#if 0
-static void Palette8BToCodebookLinear(Texel16_t pal[256], Codebook_t *cb)
-{
-	int i = 256;
-	while(i--) {
-		cb->color[i*4 + 0] = pal[i];
-		cb->color[i*4 + 1] = pal[i];
-		cb->color[i*4 + 2] = pal[i];
-		cb->color[i*4 + 3] = pal[i];
-	}
-}
-#endif
-
 //MUST be aligned to 8 byte boundry, but 32 byte bountry is better
 Codebook_t cb __attribute__((aligned(32)));
 
@@ -332,6 +314,37 @@ void make_vq_texture()
 			p->alpha = p->red = p->green = p->blue = 0;
 		}
 	}
+}
+#endif
+
+#if defined(SUPPORT_8BPP)
+static UINT16 paltbl[256];
+
+static void palcnv(CMNPAL *dst, const RGB32 *src, UINT pals, UINT bpp)
+{
+	UINT	i;
+
+	if (bpp == 8) {
+		for (i=0; i<pals; ++i) {
+			paltbl[i] = ((src[i].p.r & 0xf8) << 8) |
+				((src[i].p.g & 0xfc) << 3) |
+				(src[i].p.b >> 3);
+			dst[i].pal8 = i;
+		}
+	}
+}
+
+static void bmp16draw(void *bmp, UINT8 *dst, int width, int height,int xalign, int yalign)
+{
+	CMNVRAM	vram;
+  
+	vram.ptr = dst;
+	vram.width = width;
+	vram.height = height;
+	vram.xalign = xalign;
+	vram.yalign = yalign;
+	vram.bpp = 8;
+	cmndraw_bmp16(&vram, bmp, palcnv, CMNBMP_CENTER | CMNBMP_MIDDLE);
 }
 #endif
 
@@ -452,14 +465,6 @@ BRESULT scrnmng_create(UINT8 mode) {
 
 	buffer = 0;
 
-#if defined(SUPPORT_8BPP)
-	scrnmng_update();
-	commit_dummy_transpoly();
-	ta_commit_frame();
-#elif defined(SUPPORT_16BPP)	
-	scrnmng_clear(TRUE);
-#endif
-  
 	return(SUCCESS);
 
 scre_err:
@@ -470,13 +475,6 @@ scre_err:
 void scrnmng_destroy(void)
 {
 }
-
-#if 0
-void scrnmng_querypalette(void) {				// ddraws_palette
-
-	reportf("%s:\n",__func__);
-}
-#endif
 
 RGB16 scrnmng_makepal16(RGB32 pal32)
 {
@@ -599,6 +597,56 @@ void scrnmng_update(void)
 #endif
 }
 
+#if defined(SUPPORT_8BPP)
+void scrnmng_clear(BRESULT logo)
+{
+	void	*bmp;
+	UINT8	*p;
+	UINT8	*q;
+	int	y;
+	int	x;
+
+	bmp = NULL;
+	if (logo) {
+		bmp = (void *)bmpdata_solvedata(xmil_bmp);
+	}
+	p = (UINT8 *)screen;
+	q = p;
+	y = SCREEN_HEIGHT;
+	do {
+		x = SCREEN_WIDTH;
+		do {
+			*(UINT8 *)q = 0;
+			q += 1;
+		} while (--x);
+	} while (--y);
+	bmp16draw(bmp, p, SCREEN_WIDTH, SCREEN_HEIGHT, 1, SCREEN_WIDTH);
+	if (bmp) {
+		_MFREE(bmp);
+	}
+
+	UINT i;
+	unsigned short pal;
+	Codebook_t *cp = &cb;
+
+	memset(cp->color, 0, 256*4);
+	
+	for (i=0; i<16; i++) {
+		pal = paltbl[i];
+		cp->color[i*4 + 0] = pal;
+		cp->color[i*4 + 1] = pal;
+		cp->color[i*4 + 2] = pal;
+		cp->color[i*4 + 3] = pal;
+	}
+	
+	copy_640_8(screen, texs[buffer], &cb, SCREEN_HEIGHT);
+
+	scrnmng_update();
+	commit_dummy_transpoly();
+	ta_commit_frame();
+}
+#endif
+
 #if defined(SUPPORT_16BPP)
 void scrnmng_clear(BOOL logo)
 {
@@ -627,8 +675,7 @@ void scrnmng_clear(BOOL logo)
 		_MFREE(bmp);
 	}
 
-	memcpy64(screen, screen_tx[buffer], SCREEN_WIDTH*SCREEN_HEIGHT*2);
-	
+	txr_load_dma(screen, screen_tx[buffer], SCREEN_WIDTH*SCREEN_HEIGHT*2);
 
 	scrnmng_update();
 	commit_dummy_transpoly();
