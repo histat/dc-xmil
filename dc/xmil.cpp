@@ -38,7 +38,7 @@ short dc_mouseaxis1;
 short dc_mouseaxis2;
 
 
-static char modulefile[MAX_PATH] = "/";
+static char modulefile[MAX_PATH] = "/XMIL.BIN";
 
 XMILOSCFG	xmiloscfg = {
 	0, 0,
@@ -359,12 +359,11 @@ int main(void)
 	dc_mouseaxis1 = 0;
 	dc_mouseaxis2 = 0;
 
-  
 	ui_init();
-  
+	
 	dosio_init();
-
 	file_setcd(modulefile);
+	
 
 	ccfile_init();
   
@@ -373,11 +372,8 @@ int main(void)
 //  keystat_initialize();
   
 	mousemng_initialize();
-
 	scrnmng_initialize();
-
 	scrndraw_initialize();
-
 	
 	UINT8 scrnmode =  0;
 	
@@ -387,6 +383,7 @@ int main(void)
 
 	initload();
 
+	scrnmng_clear(TRUE);
 	
 	softkbddc_initialize();
 

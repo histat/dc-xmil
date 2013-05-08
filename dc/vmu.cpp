@@ -205,10 +205,6 @@ bool vmu_select(int *vm, const char *desc)
     
 		if (ui_keypressed(JOY_START)) {
 
-			scrnmng_update();
-			commit_dummy_transpoly();
-			ta_commit_frame();
-
 			return false;
 		}
     
@@ -219,10 +215,6 @@ bool vmu_select(int *vm, const char *desc)
 			if (vmu_avail[xpos+ypos*4]) {
 	
 				*vm = res;
-
-				scrnmng_update();
-				commit_dummy_transpoly();
-				ta_commit_frame();
 
 				return true;
 			}

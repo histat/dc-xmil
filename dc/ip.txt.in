@@ -6,7 +6,7 @@ Peripherals   : E000F10
 Product No    : T0000
 Version       : @VERSION@
 Release Date  : @DATE@
-Boot Filename : 1TURBOZ.BIN
+Boot Filename : XMIL.BIN
 SW Maker Name : wwwturbozto
-Game Title    : X millennium for Dreamcast
+Game Title    : X millennium for Dreamcast (non SD card)
 

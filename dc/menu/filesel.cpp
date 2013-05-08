@@ -15,10 +15,6 @@
 #include "ramsave.h"
 #include <ronin/ta.h>
 
-
-
-
-
 static int numfiles = 0;
 static int topfile = 0;
 
@@ -251,7 +247,7 @@ static int init_file(File *di, int max_file, int type)
 
 			memcpy(di[i].string ,work, NELEMENTS(work));
 			y += ui_font_height() + 5;
-			n++;
+			++n;
 
 			fl = fl->next;
 		}
@@ -285,7 +281,7 @@ static int select_file(int drv, File *di, int num_items, int type)
 	cur_file = topfile/MAX_FILE;
 	max_file = numfiles/MAX_FILE;
   
-	if ((numfiles%MAX_FILE) != 0)
+	if (numfiles%MAX_FILE)
 		++max_file;
 
 	switch(type) {
@@ -294,16 +290,16 @@ static int select_file(int drv, File *di, int num_items, int type)
 		break;
     
 	case FONT_FILE:
-		OEMSPRINTF(work, "Select Font p.%d/%d", cur_file+1, max_file+1);
+		OEMSPRINTF(work, "Select Font p.%d/%d", cur_file+1, max_file);
 		break;
 
 	case BIOS_FILE:
-		OEMSPRINTF(work, "Select BIOS p.%d/%d", cur_file+1, max_file+1);
+		OEMSPRINTF(work, "Select BIOS p.%d/%d", cur_file+1, max_file);
 		break;
     
 	default:
 	case FDD_FILE:
-		OEMSPRINTF(work, "Select FDD%d p.%d/%d", drv+1, cur_file+1, max_file+1);
+		OEMSPRINTF(work, "Select FDD%d p.%d/%d", drv, cur_file+1, max_file);
 	}
 
 	if (sel < 0)

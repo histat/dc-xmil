@@ -5,8 +5,8 @@ CMDNAME=`basename $0`
 BASE=`pwd`
 VER=$(date '+0.%y.%m.%d')
 #-----------------------------------------------------------------
-BINDIR="xmil-$VER-dc-plainfiles"
-SOURCEDIR="xmil-$VER-dc-source"
+BINDIR="xmil-$VER-dc-non-sd-plainfiles"
+SOURCEDIR="xmil-$VER-dc-non-sd-source"
 
 
 

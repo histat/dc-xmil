@@ -1,6 +1,6 @@
 RONIN = /usr/local/ronin
 
-#RELEASE_BUILD = 1
+RELEASE_BUILD = 0
 
 AS = sh-elf-as -little
 CC = sh-elf-gcc -ml -m4-single-only
@@ -53,7 +53,7 @@ COPT	= -Wall -O8 -fomit-frame-pointer -fno-exceptions -I$(RONIN)/include -I$(TAR
 	-I$(BASE) -I$(COMMON) -I$(Z80H) -I$(IO) -I$(VRAM) -I$(SOUND) -I$(FDD) -I$(FONT) -I$(GENERIC)	\
 	-I$(MENU)
 
-ifdef RELEASE_BUILD
+ifeq "$(RELEASE_BUILD)" "1"
 COPT	+= -DNOSERIAL -DNODISP
 endif
 
@@ -101,7 +101,7 @@ DCOBJ	= $(OBJ)/_memory.o $(OBJ)/bmpdata.o $(OBJ)/lstarray.o		\
 	$(OBJ)/dlgcfg.o $(OBJ)/icon.o $(OBJ)/ui.o
 
 
-ifdef RELEASE_BUILD
+ifeq "$(RELEASE_BUILD)" "1"
 DCLIB	= -L$(RONIN)/lib -lronin-noserial -lz -lm
 else
 DCLIB	= -L$(RONIN)/lib -lronin -lz -lm
@@ -135,7 +135,7 @@ xmil.strip.elf: $(DCELF)
 xmil.bin: $(DCELF)
 	sh-elf-objcopy -S -R .stack -O binary $< $@
 
-1TURBOZ.BIN: xmil.bin
+XMIL.BIN: xmil.bin
 	scramble $< $@
 
 #XMILVER=$(shell grep 'XMILVER_CORE' ../xmilver.h | sed -e 's/[^"]*"\([^"]*\)".*/\1/' | sed -e 's/ver\.//' | sed -e 's/[^0-9]//')
@@ -151,14 +151,21 @@ ip.txt: ip.txt.in
 IP.BIN: ip.txt
 	makeip ip.txt IP.BIN
 
-dist: all 1TURBOZ.BIN IP.BIN
+ifeq "$(RELEASE_BUILD)" "1"
+dist: all XMIL.BIN IP.BIN
+	make clean
+	make
 	sh release.sh all
+else
+dist:
+	@echo "set RELEASE_BUILD = 1"
+endif
 
 distclean:
 	$(RM) $(OBJBASE) $(BINBASE)
 
 clean:
-	$(RM) $(DCOBJ) $(DCELF) xmil.strip.elf xmil.bin 1TURBOZ.BIN IP.BIN ip.txt
+	$(RM) $(DCOBJ) $(DCELF) xmil.bin xmil.strip.elf IP.BIN ip.txt XMIL.BIN
 
 
 $(OBJ)/strres.o		:	$(COMMON)/strres.c $(HEADERS) $(COMMON)/strres.h
