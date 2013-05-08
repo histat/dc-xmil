@@ -441,7 +441,11 @@ static int disksave(STFLAGH sfh, const _FDDFILE *fdd) {
 		st.readonly = fdd->protect;
 		fh = file_open_rb(st.fname);
 		if (fh != FILEH_INVALID) {
+#ifndef __SDCARD__
 			file_getdatetime(fh, &st.date, &st.time);
+#else
+			file_getdatetime(st.fname, &st.date, &st.time);
+#endif
 			file_close(fh);
 		}
 	}
@@ -474,7 +478,11 @@ static int diskcheck(STFLAGH sfh, const OEMCHAR *name) {
 	if (st.fname[0]) {
 		fh = file_open_rb(st.fname);
 		if (fh != FILEH_INVALID) {
+#ifndef __SDCARD__
 			file_getdatetime(fh, &date, &time);
+#else
+			file_getdatetime(st.fname, &date, &time);
+#endif
 			file_close(fh);
 			if ((memcmp(&st.date, &date, sizeof(date))) ||
 				(memcmp(&st.time, &time, sizeof(time)))) {
