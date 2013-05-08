@@ -19,7 +19,7 @@ make_bin() {
 	
 	cp README disttmp/$BINDIR/
 	cp IP.BIN disttmp/$BINDIR/
-	cp 1TURBOZ.BIN disttmp/$BINDIR/
+	cp XMIL.BIN disttmp/$BINDIR/
 	cd $BASE/disttmp/
 	zip -r $BINDIR.zip $BINDIR
 	cd $BASE
@@ -32,11 +32,12 @@ make_src() {
 		mkdir -p disttmp/$SOURCEDIR
 	fi 
 
-	mkdir disttmp/$SOURCEDIR/dc
+	mkdir disttmp/$SOURCEDIR/dc-sd
 
 	cp *.cpp *.h *.res *.str Makefile disttmp/$SOURCEDIR/dc-sd/
 	cp -r menu disttmp/$SOURCEDIR/dc-sd/
 	cp -r sh disttmp/$SOURCEDIR/dc-sd/
+	cp -r lib disttmp/$SOURCEDIR/dc-sd/
 	cp ../*.c ../*.h ../*.tbl disttmp/$SOURCEDIR/
 	cp -r ../common disttmp/$SOURCEDIR/
 	cp -r ../fdd disttmp/$SOURCEDIR/

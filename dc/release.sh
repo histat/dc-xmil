@@ -5,8 +5,8 @@ CMDNAME=`basename $0`
 BASE=`pwd`
 VER=$(date '+0.%y.%m.%d')
 #-----------------------------------------------------------------
-BINDIR="xmil-$VER-dc-non-sd-plainfiles"
-SOURCEDIR="xmil-$VER-dc-non-sd-source"
+BINDIR="xmil-$VER-dc-plainfiles"
+SOURCEDIR="xmil-$VER-dc-source"
 
 
 
@@ -19,7 +19,7 @@ make_bin() {
 	
 	cp README disttmp/$BINDIR/
 	cp IP.BIN disttmp/$BINDIR/
-	cp 1TURBOZ.BIN disttmp/$BINDIR/
+	cp XMIL.BIN disttmp/$BINDIR/
 	cd $BASE/disttmp/
 	zip -r $BINDIR.zip $BINDIR
 	cd $BASE
