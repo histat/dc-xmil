@@ -16,10 +16,10 @@ make_bin() {
 		mkdir -p disttmp/$BINDIR
 	fi 
 
-	
 	cp README disttmp/$BINDIR/
 	cp IP.BIN disttmp/$BINDIR/
 	cp XMIL.BIN disttmp/$BINDIR/
+	cp 1ST_READ.BIN disttmp/$BINDIR/
 	cd $BASE/disttmp/
 	zip -r $BINDIR.zip $BINDIR
 	cd $BASE
@@ -56,6 +56,7 @@ case $1 in
     all)
     make_src
     make_bin
+	rm -rf disttmp
     ;;
     src)
     make_src
