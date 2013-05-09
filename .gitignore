@@ -4,3 +4,5 @@ obj/
 *.BIN
 *.bin
 *.txt
+disttmp
+
