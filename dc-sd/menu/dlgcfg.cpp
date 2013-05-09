@@ -560,7 +560,7 @@ int cfg_menu(Config *menu, int num_items)
 
 void dlgcfg()
 {
-	Config cfgmenu[16];
+	Config cfgmenu[sizeof(res_cfg)/sizeof(res_cfg[0])];
 	int n;
 
 	menu_index = 1;
