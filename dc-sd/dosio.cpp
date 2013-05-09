@@ -12,14 +12,18 @@ static	OEMCHAR	*curfilep = curpath;
 static FATFS Fatfs;
 static FILINFO _fi;
 
+#ifdef _USE_LFN
 static char lfn[_MAX_LFN + 1];
+#endif
 
 void dosio_init(void) {
 
 	f_mount(0, &Fatfs);
 
+#ifdef _USE_LFN	
 	_fi.lfname = lfn;
 	_fi.lfsize = sizeof(lfn);
+#endif
 }
 
 void dosio_term(void) {
@@ -38,8 +42,9 @@ FILEH file_open(const OEMCHAR *path)
 	res = f_open(fi, path, FA_READ | FA_WRITE | FA_OPEN_EXISTING);
 
 	if (res != FR_OK) {
-
+#ifndef NOSERIAL
 		printf("%s failed %s %d\n", __func__, path, res);
+#endif
 		return FILEH_INVALID;
 	}
 	
@@ -56,8 +61,9 @@ FILEH file_open_rb(const OEMCHAR *path)
 	res = f_open(fi, path, FA_READ | FA_OPEN_EXISTING);
 	
 	if (res != FR_OK) {
-
+#ifndef NOSERIAL
 		printf("%s failed %s %d\n", __func__, path, res);
+#endif
 		return FILEH_INVALID;
 	}
 	
@@ -74,8 +80,9 @@ FILEH file_create(const OEMCHAR *path)
 	res = f_open(fi, path, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
 	
 	if (res != FR_OK) {
-
+#ifndef NOSERIAL
 		printf("%s failed %s %d\n", __func__, path, res);
+#endif
 		return FILEH_INVALID;
 	}
 	
@@ -118,8 +125,9 @@ UINT file_read(FILEH handle, void *data, UINT length)
 	UINT	readsize;
 	
 	if(f_read (handle, data, length, &readsize) != FR_OK) {
-
+#ifndef NOSERIAL
 		printf("%s failed 0x%x 0x%x\n", __func__, length, readsize);
+#endif
 		return(0);
 	}
 
@@ -191,7 +199,8 @@ short file_attr(const OEMCHAR *path)
 {
 	FILINFO *fi = &_fi;
 	
-	f_stat(path, fi);
+	if (f_stat(path, fi) != FR_OK)
+		return 0;
 
 	return fi->fattrib;
 }
@@ -254,11 +263,17 @@ short file_attr_c(const OEMCHAR *path)
 
 static BRESULT setflist(FILINFO *fi, FLINFO *fli) {
 
+	char *fn;
+	
 	fli->caps = FLICAPS_SIZE | FLICAPS_ATTR | FLICAPS_DATE | FLICAPS_TIME;
 	fli->size = fi->fsize;
 	fli->attr = fi->fattrib;
 	cnvdatetime(fi, &fli->date, &fli->time);
-	char *fn = *fi->lfname ? fi->lfname : fi->fname;
+#ifdef _USE_LFN	
+	fn = *fi->lfname ? fi->lfname : fi->fname;
+#else
+	fn = fi->fname;
+#endif	
 	file_cpyname(fli->path, fn, NELEMENTS(fli->path));
 
 	return(SUCCESS);
@@ -271,8 +286,9 @@ FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli) {
 	OEMCHAR path[MAX_PATH];
 	file_cpyname(path, dir, NELEMENTS(path));
 //	file_setseparator(path, NELEMENTS(path));
-//	printf("file_list1st %s\n", path);
-
+#ifndef NOSERIAL
+	printf("file_list1st %s\n", path);
+#endif
 	FLISTH dj = (FLISTH)malloc(sizeof(DIR));
 	
 	res = f_opendir(dj, path);
@@ -289,19 +305,17 @@ FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli) {
 BRESULT file_listnext(FLISTH hdl, FLINFO *fli) {
 
 	FILINFO *fi = &_fi;
-	char *fn;
 	
 	if ((f_readdir(hdl, fi) != FR_OK) || fi->fname[0] == 0) {
 		return(FAILURE);
 	}
 
-//	fn = *fi->lfname ? fi->lfname : fi->fname;
-//	printf("file_listnext %s\n", fn);
-	
 	if (setflist(fi, fli) == SUCCESS) {
 		return(SUCCESS);
 	}
+#ifndef NOSERIAL
 	printf("file_listnext fail %s\n", fi->fname);
+#endif
 	return(FAILURE);
 }
 
