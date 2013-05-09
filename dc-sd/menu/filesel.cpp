@@ -444,6 +444,10 @@ void file_browser(int drv, int type)
 		topfile = 0;
 		sel = 0;
 		milstr_ncpy(filesel.path, "XMIL", NELEMENTS(filesel.path));
+		
+		short attr = file_attr(filesel.path);
+		if(!(attr & FILEATTR_DIRECTORY))
+			milstr_ncpy(filesel.path, "\\", NELEMENTS(filesel.path));
     
 		last = type;
 	}
