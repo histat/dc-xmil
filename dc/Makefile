@@ -153,8 +153,6 @@ IP.BIN: ip.txt
 
 ifeq "$(RELEASE_BUILD)" "1"
 dist: all XMIL.BIN IP.BIN
-	make clean
-	make
 	sh release.sh all
 else
 dist:
