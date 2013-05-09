@@ -6,7 +6,7 @@ Peripherals   : E000F10
 Product No    : T0000
 Version       : @VERSION@
 Release Date  : @DATE@
-Boot Filename : XMIL.BIN
+Boot Filename : 1ST_READ.BIN
 SW Maker Name : wwwturbozto
 Game Title    : X millennium for Dreamcast (SD card support)
 
