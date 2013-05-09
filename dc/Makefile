@@ -1,6 +1,6 @@
 RONIN = /usr/local/ronin
 
-RELEASE_BUILD = 0
+RELEASE_BUILD = 1
 
 AS = sh-elf-as -little
 CC = sh-elf-gcc -ml -m4-single-only
@@ -135,7 +135,7 @@ xmil.strip.elf: $(DCELF)
 xmil.bin: $(DCELF)
 	sh-elf-objcopy -S -R .stack -O binary $< $@
 
-XMIL.BIN: xmil.bin
+1ST_READ.BIN: xmil.bin
 	scramble $< $@
 
 #XMILVER=$(shell grep 'XMILVER_CORE' ../xmilver.h | sed -e 's/[^"]*"\([^"]*\)".*/\1/' | sed -e 's/ver\.//' | sed -e 's/[^0-9]//')
@@ -152,7 +152,7 @@ IP.BIN: ip.txt
 	makeip ip.txt IP.BIN
 
 ifeq "$(RELEASE_BUILD)" "1"
-dist: all XMIL.BIN IP.BIN
+dist: all 1ST_READ.BIN IP.BIN
 	sh release.sh all
 else
 dist:
@@ -163,7 +163,7 @@ distclean:
 	$(RM) $(OBJBASE) $(BINBASE)
 
 clean:
-	$(RM) $(DCOBJ) $(DCELF) xmil.bin xmil.strip.elf IP.BIN ip.txt XMIL.BIN
+	$(RM) $(DCOBJ) $(DCELF) xmil.bin xmil.strip.elf IP.BIN ip.txt 1ST_READ.BIN
 
 
 $(OBJ)/strres.o		:	$(COMMON)/strres.c $(HEADERS) $(COMMON)/strres.h
