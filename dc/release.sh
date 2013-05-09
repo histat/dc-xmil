@@ -56,7 +56,6 @@ case $1 in
     all)
     make_src
     make_bin
-	rm -rf disttmp
     ;;
     src)
     make_src
