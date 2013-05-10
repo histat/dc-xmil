@@ -8,7 +8,11 @@ Original X millennium site
 
 Installation
 ------------
-put the bios, the font and image files in XMIL directory on your SD card.
+put BIOS,fonts and disk images in XMIL directory on your SD card,
+
+NOTE:
+1ST_READ.BIN - scrambled binary for selfbooting
+XMIL.BIN - unscrambled binary for SD loader
 
 Controls
 --------
@@ -34,6 +38,7 @@ Credits
 -------
 
 - X1turbo Emulator Core
+
  X millennium by Yui/Punyu/Studio Milmake
  
 - Dreamcast Library
@@ -45,7 +50,7 @@ Credits
 
  FatFs by ChaN
 
-- SD card schematic and the source
+- SD card support
 
  SD Card interface for DC Serial by jj1odm
 

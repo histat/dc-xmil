@@ -11,7 +11,7 @@ selfbooting
 how to create a selfbooting CD from plain files at
 http://mc.pp.se/dc/cdr.html
 
-put the BIOS and the font in the root of the CD.
+put BIOS and fonts in the root of the CD.
 
 Controls
 --------
@@ -37,9 +37,11 @@ Credits
 -------
 
 - X1turbo Emulator Core
+
  X millennium by Yui/Punyu/Studio Milmake
  
 - Dreamcast Library
+
  Libronin - A Dreamcast development library by Marcus Comstedt, Peter Bortas and Per Hedbor
  
 Contact
