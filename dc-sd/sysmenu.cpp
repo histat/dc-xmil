@@ -23,7 +23,6 @@
 #include "event.h"
 #include "ui.h"
 #include <time.h>
-#include <ronin/dc_time.h>
 #include <ronin/ta.h>
 
 static void bmpsave()
@@ -34,8 +33,7 @@ static void bmpsave()
 	time_t long_time;
 	struct tm *now_time;
 
-	display_message("Saving...");
-	usleep(20000);
+	printf("Saving...");
 	
 	hdl = scrnsave_get();
 
