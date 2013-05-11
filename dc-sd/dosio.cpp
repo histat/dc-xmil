@@ -38,6 +38,8 @@ FILEH file_open(const OEMCHAR *path)
 	FILEH fi;
 
 	fi = (FILEH)malloc(sizeof(FIL));
+
+	if (fi == NULL) return FILEH_INVALID;
 	
 	res = f_open(fi, path, FA_READ | FA_WRITE | FA_OPEN_EXISTING);
 
@@ -45,6 +47,7 @@ FILEH file_open(const OEMCHAR *path)
 #ifndef NOSERIAL
 		printf("%s failed %s %d\n", __func__, path, res);
 #endif
+		free(fi);
 		return FILEH_INVALID;
 	}
 	
@@ -57,6 +60,8 @@ FILEH file_open_rb(const OEMCHAR *path)
 	FILEH fi;
 
 	fi = (FILEH)malloc(sizeof(FIL));
+
+	if (fi == NULL) return FILEH_INVALID;
 	
 	res = f_open(fi, path, FA_READ | FA_OPEN_EXISTING);
 	
@@ -64,6 +69,7 @@ FILEH file_open_rb(const OEMCHAR *path)
 #ifndef NOSERIAL
 		printf("%s failed %s %d\n", __func__, path, res);
 #endif
+		free(fi);
 		return FILEH_INVALID;
 	}
 	
@@ -76,6 +82,8 @@ FILEH file_create(const OEMCHAR *path)
 	FILEH fi;
 
 	fi = (FILEH)malloc(sizeof(FIL));
+
+	if (fi == NULL) return FILEH_INVALID;
 	
 	res = f_open(fi, path, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
 	
@@ -83,6 +91,7 @@ FILEH file_create(const OEMCHAR *path)
 #ifndef NOSERIAL
 		printf("%s failed %s %d\n", __func__, path, res);
 #endif
+		free(fi);
 		return FILEH_INVALID;
 	}
 	
@@ -290,6 +299,8 @@ FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli) {
 	printf("file_list1st %s\n", path);
 #endif
 	FLISTH dj = (FLISTH)malloc(sizeof(DIR));
+
+	if (dj == NULL) goto err;
 	
 	res = f_opendir(dj, path);
 	if (res == FR_OK) {
@@ -299,6 +310,9 @@ FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli) {
 			}
 		}
 	}
+	
+	free(dj);
+err:
 	return(FLISTH_INVALID);
 }
 
@@ -313,9 +327,7 @@ BRESULT file_listnext(FLISTH hdl, FLINFO *fli) {
 	if (setflist(fi, fli) == SUCCESS) {
 		return(SUCCESS);
 	}
-#ifndef NOSERIAL
-	printf("file_listnext fail %s\n", fi->fname);
-#endif
+
 	return(FAILURE);
 }
 
