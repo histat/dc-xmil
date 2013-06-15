@@ -38,6 +38,7 @@ make_src() {
 	cp -r fdd disttmp/$SOURCEDIR/dc/
 	cp -r menu disttmp/$SOURCEDIR/dc/
 	cp -r sh disttmp/$SOURCEDIR/dc/
+	cp -r ../dc-sd disttmp/$SOURCEDIR/
 	cp ../*.c ../*.h ../*.tbl disttmp/$SOURCEDIR/
 	cp -r ../common disttmp/$SOURCEDIR/
 	cp -r ../fdd disttmp/$SOURCEDIR/

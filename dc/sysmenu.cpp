@@ -23,7 +23,9 @@
 #include "ui.h"
 #include <ronin/ta.h>
 
-
+static void bmpsave()
+{
+}
 
 static void sys_cmd(MENUID id) {
 
@@ -208,6 +210,7 @@ static void sys_cmd(MENUID id) {
 		break;
 
 	case MID_BMPSAVE:
+		bmpsave();
 		break;
 			
 	case MID_SEEKSND:

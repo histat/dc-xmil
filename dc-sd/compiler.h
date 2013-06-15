@@ -83,4 +83,3 @@ typedef unsigned long long	UINT64;
 #define	MEMOPTIMIZE		2
 #define	SUPPORT_OPM
 #define	SUPPORT_X1F
-

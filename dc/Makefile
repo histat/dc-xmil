@@ -1,6 +1,6 @@
 RONIN = /usr/local/ronin
 
-RELEASE_BUILD = 1
+RELEASE_BUILD = 0
 
 AS = sh-elf-as -little
 CC = sh-elf-gcc -ml -m4-single-only
