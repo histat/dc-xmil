@@ -40,7 +40,7 @@ static void bmpsave()
     time(&long_time);
     now_time = localtime(&long_time);
 
-    OEMSPRINTF(fname, "%d%d%d%d%d%d"
+    OEMSPRINTF(fname, "%d%d%d%d%d%d.BMP"
 	       ,now_time->tm_year + 1900
 	       ,now_time->tm_mon + 1
 	       ,now_time->tm_mday
